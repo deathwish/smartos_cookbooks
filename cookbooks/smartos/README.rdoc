@@ -6,6 +6,10 @@ The basic SmartOS cookbook responsible for applying changes which should be appl
 
 default::
 
+dns:: Set up DNS using node attributes.
+
+hostname:: Set the hostname to the Chef node name, store in /etc/hostname.
+
 motd:: Uses an ERB template to create /etc/motd
 
 nicstat:: Install Tim Cook's _nicstat_ tool to /opt/custom/bin.
@@ -13,6 +17,8 @@ nicstat:: Install Tim Cook's _nicstat_ tool to /opt/custom/bin.
 ntp:: Configures NTP
 
 ssh:: Manage the Root SSH User Configuration
+
+var:: Enable atime on /var so logging works correctly.
 
 = ATTRIBUTES:
 

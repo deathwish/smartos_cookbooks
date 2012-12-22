@@ -7,51 +7,17 @@
 # All rights reserved - Do Not Redistribute
 #
 
-## Explicitly allow restart of  name service cache after
-## updating resolv.conf
+## Setup DNS
 ##
-service "name-service-cache" do
- supports :enable => true, :start => true, :stop => true, :restart => true
- action [ :enable, :start ]
-end
-
-
-## Enable DNS
-##
-template "/etc/nsswitch.conf" do
- source "nsswitch.conf.erb"
- owner "root"
- group "sys"
- mode '0644'
- not_if "cat /etc/nsswitch.conf | grep ^hosts: | grep \" dns\""
- notifies :restart, resources(:service => "name-service-cache"), :immediate
-end
-
-## DNS Resolver
-##
-template "/etc/resolv.conf" do
- source "resolv.conf.erb"
- owner "root"
- group "sys"
- mode "0644"
- notifies :restart, resources(:service => "name-service-cache"), :immediate
-end
+include_recipe "smartos::dns"
 
 ## Set the Hostname
 ##
-nodename = Chef::Config[:node_name]
-execute "Set hostname to #{nodename}" do
-  command "/usr/bin/hostname #{nodename} && /usr/bin/hostname > /etc/nodename"
-  not_if "grep #{nodename} /etc/nodename"
-end
+include_recipe "smartos::hostname"
 
-
-## Enable atime on /var, so that WTMPX and logs work properly
+## Enable atime on /var
 ##
-execute "Enable atime for /var" do
-  command "/usr/sbin/zfs set atime=on zones/var"
-  only_if "/usr/sbin/zfs get -Hp atime zones/var | grep off"
-end
+include_recipe "smartos::var"
 
 ##  Setup SSH for the Root User
 ##
